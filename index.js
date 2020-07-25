@@ -22,21 +22,70 @@ const writeFilePro = (file, data) => {
   });
 };
 
-readFilePro("./dog.txt")
-  .then((data) => {
-    return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`);
-  })
-  .then((res) => {
-    console.log(res.body.message);
-    return writeFilePro("dog-img.txt", res.body.message);
-    // fs.writeFile("dog-img.txt", res.body.message, (err) => {
-    //   if (err) return console.log(err.message);
-    //   console.log("random img to file");
-    // });
-  })
-  .then(() => {
+const getDogPic = async () => {
+  try {
+    const data = await readFilePro("./dog.txt");
+    console.log(`Breed: ${data}`);
+
+    const res1Pro = superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+
+    const res2Pro = superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+
+    const res3Pro = superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+
+    const all = await Promise.all([res1Pro, res2Pro, res3Pro]);
+    const imgs = all.map((el) => el.body.message);
+    console.log(imgs);
+    // console.log(res.body.message);
+
+    await writeFilePro("dog-img.txt", imgs.join("\n"));
     console.log("random img to file");
-  })
-  .catch((err) => {
-    console.log(err.message);
-  });
+  } catch (err) {
+    console.log(err);
+
+    throw err;
+  }
+  return "step2 ready";
+};
+
+(async () => {
+  try {
+    console.log("step1 - will get dog pics");
+    const x = await getDogPic();
+    console.log(x);
+    console.log("step3 - done getting dos pic");
+  } catch (err) {
+    console.log("ERROR");
+  }
+})();
+
+// console.log("step1 - will get dog pics");
+// getDogPic()
+//   .then((x) => {
+//     console.log(x);
+//     console.log("step3 - done getting dos pic");
+//   })
+//   .catch((err) => {
+//     console.log("ERROR");
+//   });
+
+// readFilePro("./dog.txt")
+//   .then((data) => {
+//     return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`);
+//   })
+//   .then((res) => {
+//     console.log(res.body.message);
+//     return writeFilePro("dog-img.txt", res.body.message);
+//   })
+//   .then(() => {
+//     console.log("random img to file");
+//   })
+//   .catch((err) => {
+//     console.log(err.message);
+//   });
